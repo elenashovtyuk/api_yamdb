@@ -9,7 +9,7 @@ class Category(models.Model):
         verbose_name='Название категории',
         # по ТЗ есть ограничение длины этого текстового поля,
         # указываем это в параметре max_length
-        max_lenght=256
+        max_length=256
     )
     # поле slug должно быть уникальным,
     # поэтому указываем в параметрах unique = True
@@ -64,7 +64,7 @@ class Title(models.Model):
     # указываем это в параметре max_length
     name = models.CharField(
         verbose_name='Название произведения',
-        max_lenght=256
+        max_length=256
     )
     year = models.IntegerField(
         verbose_name='Год выпуска'
@@ -97,6 +97,7 @@ class Title(models.Model):
         related_name='titles',
         verbose_name='Категория произведения',
         on_delete=models.SET_NULL,
+        null=True
     )
 
     # Так как одно произведение может быть привязано к нескольким жанрам,
@@ -121,7 +122,7 @@ class Title(models.Model):
         Genre,
         related_name='titles',
         verbose_name='Жанр произведения',
-        on_delete=models.SET_NULL,
+
     )
 
     def __str__(self):

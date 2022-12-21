@@ -74,7 +74,7 @@ class Title(models.Model):
 
         # добавляем опцию для поля - blank
         # т.е есть возможность добавлять произведение без описания
-        # и это поле не является обязательным
+        # это поле не является обязательным cогласно ТЗ
         blank=True
     )
 
@@ -100,6 +100,12 @@ class Title(models.Model):
         null=True
     )
 
+    rating = models.IntegerField(
+        verbose_name='Рейтинг',
+        null=True,
+        default=None
+    )
+
     # Так как одно произведение может быть привязано к нескольким жанрам,
     #  то используем тип поля ManyToMany
     # поле genre представляет собой отношение к другой таблице Genre
@@ -117,17 +123,43 @@ class Title(models.Model):
     # Он сообщает, что делать, когда родительское значение удалено.
     # Для нашего случая жанр будет удаляться
     # без удаления связанного произведения
+    # указываем параметр blank = True,
+    # чтобы была возможность создавать экземпляры модели Title без категории
 
     genre = models.ManyToManyField(
         Genre,
         related_name='titles',
         verbose_name='Жанр произведения',
-
+        # в качестве дополнительного парамметра указываем throught
+        #  здесь указываем промежуточную модель,
+        # через которую обеспечивается связь
+        # многие ко многим между моделями Title и Genre
+        through='GenreTitle'
     )
-
-    def __str__(self):
-        return self.name
 
     class Meta:
         verbose_name = 'Произведение'
         verbose_name_plural = 'Произведения'
+
+    def __str__(self):
+        return self.name
+
+
+# промежуточная модель между моделями Title и Genre
+# в ней будут 2 поля - title и genre
+class GenreTitle(models.Model):
+    title = models.ForeignKey(
+        Title,
+        verbose_name='Произведение',
+        on_delete=models.CASCADE)
+    genre = models.ForeignKey(
+        Genre,
+        verbose_name='Жанр',
+        on_delete=models.CASCADE)
+
+    class Meta:
+        verbose_name = 'Произведение и жанр'
+        verbose_name_plural = 'Произведения и жанры'
+
+    def __str__(self):
+        return f'{self.title}, {self.genre}'

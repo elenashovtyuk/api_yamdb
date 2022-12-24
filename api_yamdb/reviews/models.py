@@ -104,11 +104,11 @@ class Title(models.Model):
         null=True
     )
 
-    rating = models.IntegerField(
-        verbose_name='Рейтинг',
-        null=True,
-        default=None
-    )
+    # rating = models.IntegerField(
+    #     verbose_name='Рейтинг',
+    #     null=True,
+    #     default=None
+    # )
 
     # Так как одно произведение может быть привязано к нескольким жанрам,
     #  то используем тип поля ManyToMany
@@ -138,7 +138,8 @@ class Title(models.Model):
         #  здесь указываем промежуточную модель,
         # через которую обеспечивается связь
         # многие ко многим между моделями Title и Genre
-        through='GenreTitle'
+        through='GenreTitle',
+
     )
 
     class Meta:

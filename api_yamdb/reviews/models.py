@@ -1,8 +1,5 @@
-from django.contrib.auth import get_user_model
 from django.core.validators import MaxValueValidator, MinValueValidator
 from django.db import models
-
-User = get_user_model()
 
 
 class Review(models.Model):
@@ -67,6 +64,10 @@ class Comment(models.Model):
         verbose_name='Отзыв'
     )
     text = models.CharField('Текст комментария', max_length=256)
+    pub_date = models.DateTimeField(
+        'Дата отзыва',
+        auto_now_add=True,
+    )
 
     class Meta:
         verbose_name = 'Комментарий'

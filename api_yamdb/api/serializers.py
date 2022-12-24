@@ -13,7 +13,7 @@ from reviews.models import Title, Category, Genre
 class CategorySerializer(serializers.ModelSerializer):
     # в классе Meta указываем модель, с которой будет работать сериализатор
     # также указываем поля, для которых необходимо выполнить сериализацию
-    # в нашем случае это поле name
+    # в нашем случае это поля name, slug
     class Meta:
         model = Category
         fields = ('name', 'slug')
@@ -85,6 +85,7 @@ class ReadOnlyTitleSerializer(serializers.ModelSerializer):
         model = Title
         fields = '__all__'
 # таким образом получаем сериализатор для чтения
+# то есть, когда нам нужно только получить список всех произведений
 # (Get-запросы к эндпоинту api/v1/titles/)
 
 

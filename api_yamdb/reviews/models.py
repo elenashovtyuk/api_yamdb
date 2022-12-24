@@ -138,7 +138,7 @@ class Title(models.Model):
         #  здесь указываем промежуточную модель,
         # через которую обеспечивается связь
         # многие ко многим между моделями Title и Genre
-        through='GenreTitle',
+        # through='GenreTitle',
 
     )
 
@@ -148,23 +148,3 @@ class Title(models.Model):
 
     def __str__(self):
         return self.name
-
-
-# промежуточная модель между моделями Title и Genre
-# в ней будут 2 поля - title и genre
-class GenreTitle(models.Model):
-    title = models.ForeignKey(
-        Title,
-        verbose_name='Произведение',
-        on_delete=models.CASCADE)
-    genre = models.ForeignKey(
-        Genre,
-        verbose_name='Жанр',
-        on_delete=models.CASCADE)
-
-    class Meta:
-        verbose_name = 'Произведение и жанр'
-        verbose_name_plural = 'Произведения и жанры'
-
-    def __str__(self):
-        return f'{self.title}, {self.genre}'

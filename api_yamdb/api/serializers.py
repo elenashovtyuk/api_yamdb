@@ -16,7 +16,7 @@ class CategorySerializer(serializers.ModelSerializer):
     # в нашем случае это поле name
     class Meta:
         model = Category
-        fields = ('name',)
+        fields = ('name', 'slug')
 
 
 # создаем сериализатор для модели Genre
@@ -27,7 +27,7 @@ class GenreSerializer(serializers.ModelSerializer):
     # это также, как и в случае с CategorySerializer поле name
     class Meta:
         model = Genre
-        fields = ('name',)
+        fields = ('name', 'slug')
 
 
 # создаем сериализатор для модели Title

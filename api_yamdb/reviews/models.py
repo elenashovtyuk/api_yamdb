@@ -1,4 +1,68 @@
 from django.db import models
+from django.contrib.auth.models import AbstractUser
+
+
+# cоздадим кастомную модель пользователя на основе класса AbstractUser
+# выбираем именно этот встроенный класс,
+# так как нас устраиваю поля, которые уже есть у этого класса, но
+# нам нужно расширить встроенную пользовательскую модель
+# - добавить новые поля
+# - переопределить некоторые поля
+# указываем поля модели User согласно документации апи
+
+class User(AbstractUser):
+    """Настраиваемая модель пользователя"""
+    USER = 'user'
+    MODERATOR = 'moderator'
+    ADMIN = 'admin'
+    ROLE_CHOICES = (
+        (USER, 'user'),
+        (MODERATOR, 'moderator'),
+        (ADMIN, 'admin'),
+    )
+
+    # поле username представляет собой строковое обозначение имени пользователя
+    # и по ТЗ есть ограничение по длине, укажем его
+    # также это поле должно быть уникальным, тоже укажем это в аттрибутах
+    username = models.CharField(
+        verbose_name='Имя пользователя',
+        max_length=150,
+        unique=True
+    )
+    # для поля email также укажем ограничение по длине и уникальность
+    email = models.EmailField(
+        verbose_name='Электронная почта пользователя',
+        max_length=254,
+        unique=True
+    )
+    # # следующие два поля - строковые,
+    # # у обоих нужно указать ограничение по длине по ТЗ
+    # first_name = models.CharField(
+    #     max_length=150
+    # )
+    # last_name = models.CharField(
+    #     max_length=150,
+    # )
+
+    # следующее поле bio может быть достаточно объемным, так как это биография,
+    # описание поэтому выбираем тип поля TextField
+    # ограничения по длине не указываем
+    # кроме того, это поле необязательное для заполнения,
+    # поэтому укажем соответствующие аттрибуты - blank и null
+    bio = models.TextField(
+        verbose_name='Биография пользователя',
+        blank=True,
+        null=True
+    )
+    # следующее поле роль пользователя. Оно строковое, выбираем тип CharField
+    # кроме того,, по умолчанию оно = user. Укажем это в аттрибутах
+    # также поле role должно позволять выбрать одну из ролей
+    role = models.CharField(
+        verbose_name='Роль пользователя',
+        default=USER,
+        choices=ROLE_CHOICES
+
+    )
 
 
 # создаем модель категорий произведений
@@ -66,9 +130,12 @@ class Title(models.Model):
         verbose_name='Название произведения',
         max_length=256
     )
+
     year = models.IntegerField(
-        verbose_name='Год выпуска'
+        verbose_name='Год выпуска',
+        validators=[validate_year]
     )
+
     description = models.TextField(
         verbose_name='Описание произведения',
 

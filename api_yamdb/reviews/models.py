@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser
+from .validators import validate_year
 
 
 # cоздадим кастомную модель пользователя на основе класса AbstractUser

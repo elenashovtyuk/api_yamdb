@@ -25,7 +25,7 @@ from .serializers import (CategorySerializer,
 # создадим вьюсет для модели Category
 class CategoryViewSet(viewsets.ModelViewSet):
     """Отображение действий с категориями произведений"""
-    qweryset = Category.objects.all()
+    queryset = Category.objects.all()
     serializer_class = CategorySerializer
     # чтобы создать ограничение прав доступа на уровне вьюсетов
     # нужно добавить параметр permission_classes
@@ -36,7 +36,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
 # создадим вьюсет для модели Genre
 class GenreViewSet(viewsets.ModelViewSet):
     """Отображение действий с жанрами произведений"""
-    qweryset = Genre.objects.all()
+    queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     # чтобы создать ограничение прав доступа на уровне вьюсетов
     # нужно добавить параметр permission_classes
@@ -47,7 +47,7 @@ class GenreViewSet(viewsets.ModelViewSet):
 # создадим вьюсет для модели Title
 class TitleViewSet(viewsets.ModelViewSet):
     """Отображение действий с произведениями"""
-    qweryset = Title.objects.all()
+    queryset = Title.objects.all()
     # так как для модели Title у нас 2 сериализатора, то во вьюсете для Title
     # мы не указываем serializer_class,
     # а переопределяем метод get_serializer_class()

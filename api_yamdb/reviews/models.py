@@ -6,25 +6,30 @@ User = get_user_model()
 
 
 class Review(models.Model):
+    """Модель отзыва на произведение."""
+    title = models.ForeignKey(
+        Title,
+        on_delete=models.CASCADE,
+        related_name='reviews',
+        verbose_name='Произведение'
+    )
+    text = models.CharField('Текст отзыва', max_length=256)
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
         related_name='reviews',
         verbose_name='Автор отзыва'
     )
-    title = models.ForeignKey(
-        Title,
-        on_delete=models.CASCADE,
-        related_name='titles',
-        verbose_name='Произведение'
-    )
-    text = models.CharField('Текст отзыва')
     score = models.IntegerField(
         'Оценка',
         validators=[
             MinValueValidator(1),
             MaxValueValidator(10)
         ]
+    )
+    pub_date = models.DateTimeField(
+        'Дата отзыва',
+        auto_now_add=True,
     )
 
     class Meta:
@@ -36,6 +41,7 @@ class Review(models.Model):
 
 
 class Comment(models.Model):
+    """Модель комментария на отзыв."""
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -45,16 +51,16 @@ class Comment(models.Model):
     title = models.ForeignKey(
         Title,
         on_delete=models.CASCADE,
-        related_name='titles',
+        related_name='comments',
         verbose_name='Произведение'
     )
     review = models.ForeignKey(
         Review,
         on_delete=models.CASCADE,
-        related_name='reviews',
+        related_name='comments',
         verbose_name='Отзыв'
     )
-    text = models.CharField('Текст комментария')
+    text = models.CharField('Текст комментария', max_length=256)
 
     class Meta:
         verbose_name = 'Комментарий'

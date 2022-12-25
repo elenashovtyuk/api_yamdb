@@ -1,5 +1,6 @@
 from pathlib import Path
 import os
+import datetime
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -112,6 +113,10 @@ REST_FRAMEWORK = {
 }
 
 AUTH_USER_MODEL = 'users.User'
+
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': datetime.timedelta(days=365),
+}
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')

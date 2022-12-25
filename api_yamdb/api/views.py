@@ -29,7 +29,7 @@ def send_confirmation_code(request):
         )
         mail_subject = 'Код подтверждения на Yamdb.ru'
         message = f'Ваш код подтверждения: {confirmation_code}'
-        send_mail(mail_subject, message, 'Yamdb.ru <admin@yamdb.ru>', [email])
+        send_mail(mail_subject, message, 'Yamdb.ru <mail@yamdb.ru>', [email])
         return Response(f'Код отправлен на адрес {email}', status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -69,8 +69,9 @@ class APIUser(APIView):
     def patch(self, request):
         if request.user.is_authenticated:
             user = get_object_or_404(User, id=request.user.id)
-            serializer = UserSerializer(user, data=request.data, partial=True)
+            serializer = UserSerializer(user, data=request.data, partial=True,)
             if serializer.is_valid():
+                serializer.validated_data['role'] = request.user.role
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)

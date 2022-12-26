@@ -1,6 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import AbstractUser, BaseUserManager
-
+from django.core.validators import RegexValidator
 
 class CustomUserManager(BaseUserManager):
     def create_user(
@@ -40,8 +40,13 @@ class CustomUserManager(BaseUserManager):
 
 
 class User(AbstractUser):
-    username = models.CharField(max_length=150, unique=True)
-    email = models.EmailField(verbose_name="Электронная почта", unique=True)
+    username = models.CharField(
+        max_length=150,
+        unique=True,
+        validators=[RegexValidator(regex=r'^[\w.@+-]+\Z', message= 'недопустимое имя пользователя',)
+        ]
+        )
+    email = models.EmailField(verbose_name="Электронная почта", max_length=254, unique=True)
     bio = models.TextField(
         verbose_name="Биография пользователя",
         blank=True,
@@ -70,6 +75,8 @@ class User(AbstractUser):
     )
 
     objects = CustomUserManager()
+
+
 
     def __str__(self):
         return self.email

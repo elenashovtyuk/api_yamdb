@@ -16,13 +16,11 @@ from .serializers import (
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
-    queryset = Review.objects.all()
-    serializer_class = ReviewSerializer
 
     def get_serializer_class(self):
         if self.action == 'partial_update':
             return ReviewUpdateSerializer
-        return self.serializer_class
+        return ReviewSerializer
 
     def get_permissions(self):
         if self.action in ('partial_update', 'destroy',):
@@ -41,7 +39,6 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
-    queryset = Comment.objects.all()
     serializer_class = CommentSerializer
 
     def get_permissions(self):

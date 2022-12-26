@@ -21,7 +21,6 @@ class ReviewSerializer(ReviewUpdateSerializer):
 
     def validate(self, data):
         request = self.context['request']
-        print(request)
         author_id = request.user
         title_id = self.context['view'].kwargs.get('title_id')
         if Review.objects.filter(

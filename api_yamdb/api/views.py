@@ -7,6 +7,7 @@ from reviews.models import Category, Genre, Title
 # из приложения api импортируем необходимые кастомные пермишнс
 # для моделей Title, Category, Genre это IsAdminOrReadOnly
 # from .permissions  import IsAdminOrReadOnly
+from .permissions import (IsAdminOrReadOnly,)
 # из приложения api импортируем все нужные сериализаторы
 from .serializers import (CategorySerializer,
                           GenreSerializer,
@@ -27,6 +28,7 @@ class CategoryViewSet(viewsets.ModelViewSet):
     """Отображение действий с категориями произведений"""
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
+    permission_classes = (IsAdminOrReadOnly,)
     # чтобы создать ограничение прав доступа на уровне вьюсетов
     # нужно добавить параметр permission_classes
     # и в виде кортежа указать один или несколько кастомных пермишнс
@@ -38,6 +40,7 @@ class GenreViewSet(viewsets.ModelViewSet):
     """Отображение действий с жанрами произведений"""
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
+    permission_classes = (IsAdminOrReadOnly,)
     # чтобы создать ограничение прав доступа на уровне вьюсетов
     # нужно добавить параметр permission_classes
     # и в виде кортежа указать один или несколько кастомных пермишнс
@@ -48,6 +51,7 @@ class GenreViewSet(viewsets.ModelViewSet):
 class TitleViewSet(viewsets.ModelViewSet):
     """Отображение действий с произведениями"""
     queryset = Title.objects.all()
+    permission_classes = (IsAdminOrReadOnly,)
     # так как для модели Title у нас 2 сериализатора, то во вьюсете для Title
     # мы не указываем serializer_class,
     # а переопределяем метод get_serializer_class()

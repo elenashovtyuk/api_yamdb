@@ -12,7 +12,7 @@ class Review(models.Model):
         verbose_name='Произведение',
         null=True
     )
-    text = models.CharField('Текст отзыва', max_length=256)
+    text = models.TextField('Текст отзыва')
     author = models.ForeignKey(
         User,
         on_delete=models.CASCADE,
@@ -69,7 +69,7 @@ class Comment(models.Model):
         verbose_name='Отзыв',
         null=True
     )
-    text = models.CharField('Текст комментария', max_length=256)
+    text = models.TextField('Текст комментария')
     pub_date = models.DateTimeField(
         'Дата отзыва',
         auto_now_add=True,

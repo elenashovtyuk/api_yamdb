@@ -1,10 +1,16 @@
 from django.shortcuts import get_object_or_404
-from rest_framework import viewsets
-from rest_framework.pagination import PageNumberPagination
-from reviews.models import Review, Comment
+from rest_framework import (
+    permissions,
+    viewsets
+)
+from reviews.models import Title, Review, Comment
 
+from .permissions import (
+    IsAuthorOrModeratorOrAdminOrReadOnly
+)
 from .serializers import (
     ReviewSerializer,
+    ReviewUpdateSerializer,
     CommentSerializer
 )
 
@@ -12,8 +18,18 @@ from .serializers import (
 class ReviewViewSet(viewsets.ModelViewSet):
     queryset = Review.objects.all()
     serializer_class = ReviewSerializer
-    pagination_class = PageNumberPagination
-    # permission_classes = (IsAuthorOrReadOnly,)
+
+    def get_serializer_class(self):
+        if self.action == 'partial_update':
+            return ReviewUpdateSerializer
+        return self.serializer_class
+
+    def get_permissions(self):
+        if self.action in ('partial_update', 'destroy',):
+            return (IsAuthorOrModeratorOrAdminOrReadOnly(),)
+        if self.action == 'create':
+            return (permissions.IsAuthenticated(),)
+        return super().get_permissions()
 
     def get_queryset(self):
         title = get_object_or_404(Title, pk=self.kwargs.get('title_id'))
@@ -27,8 +43,11 @@ class ReviewViewSet(viewsets.ModelViewSet):
 class CommentViewSet(viewsets.ModelViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    pagination_class = PageNumberPagination
-    # permission_classes = (IsAuthorOrReadOnly,)
+
+    def get_permissions(self):
+        if self.action not in ('list', 'retrieve',):
+            return (IsAuthorOrModeratorOrAdminOrReadOnly(),)
+        return super().get_permissions()
 
     def get_queryset(self):
         review = get_object_or_404(

@@ -1,17 +1,21 @@
 from rest_framework import permissions
-from users.models import User
 
 
-class IsAdmin(permissions.BasePermission):
+class IsAdminOrReadOnly(permissions.BasePermission):
     def has_permission(self, request, view):
-        if User.objects.filter(id=request.user.id).exists():
-            return request.user.is_admin
+        return (
+            request.method in permissions.SAFE_METHODS
+            or (request.user.is_authenticated and (
+                request.user.is_admin or request.user.is_superuser))
+        )
 
 
 class IsSuperUserOrAdmin(permissions.BasePermission):
     def has_permission(self, request, view):
-        if User.objects.filter(id=request.user.id).exists():
-            return request.user.is_superuser or request.user.is_admin
+        return (
+            request.user.is_authenticated
+            and (request.user.is_superuser or request.user.is_admin)
+        )
 
 
 class IsAuthorOrModeratorOrAdminOrReadOnly(permissions.BasePermission):

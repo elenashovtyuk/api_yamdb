@@ -13,4 +13,5 @@ def validate_year(year):
     # соответствующего сообщения
     if year > current_year:
         raise ValidationError(
-            f'Произведение создано позже текущего года ({current_year})!')
+            f'Произведение создано позже текущего года ({current_year})!'
+        )

@@ -1,8 +1,92 @@
-from django.core.validators import MaxValueValidator, MinValueValidator
+from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
 from django.db import models
 from users.models import User
 
+from .validators import validate_year
 
+
+class Category(models.Model):
+    """Модель категории произведения"""
+    name = models.CharField(
+        verbose_name='Название категории',
+        max_length=256
+    )
+    slug = models.SlugField(
+        verbose_name='Идентификатор категории',
+        max_length=50,
+        unique=True,
+        validators=(RegexValidator(r'^[-a-zA-Z0-9_]+$'),)
+    )
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
+
+
+class Genre(models.Model):
+    """Модель жанра произведения"""
+    name = models.CharField(
+        verbose_name='Название жанра',
+        max_length=256
+    )
+
+    slug = models.SlugField(
+        verbose_name='Идентификатор жанра',
+        max_length=50,
+        unique=True,
+        validators=(RegexValidator(r'^[-a-zA-Z0-9_]+$'),)
+    )
+
+    def __str__(self):
+        return self.name
+
+    class Meta:
+        verbose_name = 'Жанр'
+        verbose_name_plural = 'Жанры'
+
+
+class Title(models.Model):
+    """Модель произведения"""
+    name = models.CharField(
+        verbose_name='Название произведения',
+        max_length=256
+    )
+
+    year = models.IntegerField(
+        verbose_name='Год выпуска',
+        validators=(validate_year,)
+    )
+
+    description = models.TextField(
+        verbose_name='Описание произведения',
+        blank=True
+    )
+
+    category = models.ForeignKey(
+        Category,
+        related_name='titles',
+        verbose_name='Категория произведения',
+        on_delete=models.SET_NULL,
+        null=True
+    )
+
+    genre = models.ManyToManyField(
+        Genre,
+        related_name='titles',
+        verbose_name='Жанр произведения',
+    )
+
+    class Meta:
+        verbose_name = 'Произведение'
+        verbose_name_plural = 'Произведения'
+
+    def __str__(self):
+        return self.name
+        
+        
 class Review(models.Model):
     """Модель отзыва на произведение."""
     title = models.ForeignKey(

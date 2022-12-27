@@ -5,6 +5,7 @@ from users.models import User
 
 
 class CategorySerializer(serializers.ModelSerializer):
+    """Сериализатор для категорий."""
     
     class Meta:
         model = Category
@@ -12,7 +13,8 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class GenreSerializer(serializers.ModelSerializer):
-   
+    """Сериализатор для жанров."""
+
     class Meta:
         model = Genre
         fields = ('name', 'slug')
@@ -20,7 +22,6 @@ class GenreSerializer(serializers.ModelSerializer):
 
 class ReadOnlyTitleSerializer(serializers.ModelSerializer):
     """Сериализатор для произведений (только для чтения)"""
-    
     category = CategorySerializer()
     genre = GenreSerializer(many=True)
     rating = serializers.IntegerField(default=1)
@@ -31,7 +32,7 @@ class ReadOnlyTitleSerializer(serializers.ModelSerializer):
 
 
 class TitleSerializer(serializers.ModelSerializer):
-    """Сериализатор для произведений(для записи)"""
+    """Сериализатор для произведений (для записи)."""
     category = serializers.SlugRelatedField(
         slug_field='slug',
         queryset=Category.objects.all()
@@ -51,14 +52,14 @@ class TitleSerializer(serializers.ModelSerializer):
 class ReviewUpdateSerializer(serializers.ModelSerializer):
     """Сериализатор для отзывов (только для редактирования)."""
     author = SlugRelatedField(
-        read_only=True,
         slug_field='username',
+        read_only=True,
         default=serializers.CurrentUserDefault()
     )
 
     class Meta:
-        fields = ('id', 'text', 'author', 'score', 'pub_date',)
         model = Review
+        fields = ('id', 'text', 'author', 'score', 'pub_date',)
 
 
 class ReviewSerializer(ReviewUpdateSerializer):
@@ -72,8 +73,8 @@ class ReviewSerializer(ReviewUpdateSerializer):
             author=author_id, title=title_id
         ).exists():
             raise serializers.ValidationError(
-                'Every person can add only the one review '
-                'for every title'
+                'Каждый пользователь может оставить только один отзыв '
+                'к произведению'
             )
         return data
 
@@ -81,17 +82,18 @@ class ReviewSerializer(ReviewUpdateSerializer):
 class CommentSerializer(serializers.ModelSerializer):
     """Сериализатор для комментариев."""
     author = SlugRelatedField(
-        read_only=True,
         slug_field='username',
+        read_only=True,
         default=serializers.CurrentUserDefault()
     )
 
     class Meta:
-        fields = ('id', 'text', 'author', 'pub_date',)
         model = Comment
+        fields = ('id', 'text', 'author', 'pub_date',)
 
 
 class SendCodeSerializer(serializers.ModelSerializer):
+    """Сериализатор для регистрации."""
 
     class Meta:
         model = User
@@ -99,13 +101,17 @@ class SendCodeSerializer(serializers.ModelSerializer):
 
 
 class CheckConfirmationCodeSerializer(serializers.Serializer):
+    """Сериализатор для получения токена."""
     username = serializers.CharField(required=True)
     confirmation_code = serializers.CharField(required=True)
 
 
 class UserSerializer(serializers.ModelSerializer):
-
+    """Сериализатор для пользователей."""
 
     class Meta:
-        fields = ('first_name', 'last_name', 'username', 'bio', 'email', 'role',)
         model = User
+        fields = (
+            'first_name', 'last_name', 'username',
+            'bio', 'email', 'role',
+        )

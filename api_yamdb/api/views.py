@@ -1,9 +1,11 @@
+from django.core.validators import RegexValidator
 # from django.shortcuts import render
-from rest_framework import viewsets
+from rest_framework import filters, status, viewsets
 # from django.shortcuts import get_object_or_404
 
 # из приложения reviews импортируем все нужные модели
 from reviews.models import Category, Genre, Title
+from .mixins import CLDViewSet
 # из приложения api импортируем необходимые кастомные пермишнс
 # для моделей Title, Category, Genre это IsAdminOrReadOnly
 # from .permissions  import IsAdminOrReadOnly
@@ -15,7 +17,7 @@ from .serializers import (CategorySerializer,
                           TitleSerializer)
 
 
-# для создания вьюсетов используем класс ModelViewSet
+# для создания вьюсета для Title используем класс ModelViewSet
 # он может обрабатывать все 6 типичных действий с моделями
 # (create, retriev, list, update, partial_update, destroy)
 # при создании вьюсета указываем 2 обязательных поля
@@ -23,12 +25,22 @@ from .serializers import (CategorySerializer,
 # serializer_class - сериализатор,
 # который будет применяться для сериализации и валидации
 
+# а для создания вьюсетов для Genre и Category
+# создадим свой базовый класс в файле mixins.py
+# который будет включать в себя только три нужных нам вьюсета
+# которые отвечают за получение списка объектов,
+# добавление  и удаление объекта
+# плюс GenericViewSet.
+
 # создадим вьюсет для модели Category
-class CategoryViewSet(viewsets.ModelViewSet):
+class CategoryViewSet(CLDViewSet):
     """Отображение действий с категориями произведений"""
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (IsAdminOrReadOnly,)
+    validators=(RegexValidator(r'^[-a-zA-Z0-9_]+$')
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ['=name']
     # чтобы создать ограничение прав доступа на уровне вьюсетов
     # нужно добавить параметр permission_classes
     # и в виде кортежа указать один или несколько кастомных пермишнс
@@ -36,11 +48,14 @@ class CategoryViewSet(viewsets.ModelViewSet):
 
 
 # создадим вьюсет для модели Genre
-class GenreViewSet(viewsets.ModelViewSet):
+class GenreViewSet(CLDViewSet):
     """Отображение действий с жанрами произведений"""
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     permission_classes = (IsAdminOrReadOnly,)
+    validators=(RegexValidator(r'^[-a-zA-Z0-9_]+$')
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ['=name']
     # чтобы создать ограничение прав доступа на уровне вьюсетов
     # нужно добавить параметр permission_classes
     # и в виде кортежа указать один или несколько кастомных пермишнс

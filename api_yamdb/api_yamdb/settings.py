@@ -59,6 +59,14 @@ TEMPLATES = [
     },
 ]
 
+REST_FRAMEWORK = {
+
+    'DEFAULT_FILTER_BACKENDS': [
+        'django_filters.rest_framework.DjangoFilterBackend',
+    ],
+}
+
+
 WSGI_APPLICATION = 'api_yamdb.wsgi.application'
 
 

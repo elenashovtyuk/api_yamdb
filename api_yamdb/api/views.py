@@ -1,4 +1,3 @@
-
 from django.core.mail import send_mail
 from rest_framework import viewsets, filters, status, permissions
 from rest_framework.decorators import api_view, action
@@ -12,7 +11,52 @@ import random
 from users.models import User
 from .serializers import SendCodeSerializer, CheckConfirmationCodeSerializer, UserSerializer
 from .permissions import IsAdmin
+from rest_framework import filters, viewsets
 
+from django_filters.rest_framework import DjangoFilterBackend
+
+from reviews.models import Category, Genre, Title
+from .filters import FilterForTitle
+from .mixins import CLDViewSet
+
+from .permissions import (IsAdminOrReadOnly,)
+from .serializers import (CategorySerializer,
+                          GenreSerializer,
+                          ReadOnlyTitleSerializer,
+                          TitleSerializer)
+
+
+class CategoryViewSet(CLDViewSet):
+    """Отображение действий с категориями произведений"""
+    queryset = Category.objects.all()
+    serializer_class = CategorySerializer
+    permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('=name',)
+    lookup_field = 'slug'
+
+    
+class GenreViewSet(CLDViewSet):
+    """Отображение действий с жанрами произведений"""
+    queryset = Genre.objects.all()
+    serializer_class = GenreSerializer
+    permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (filters.SearchFilter,)
+    search_fields = ('=name',)
+    lookup_field = 'slug'
+
+   
+class TitleViewSet(viewsets.ModelViewSet):
+    """Отображение действий с произведениями"""
+    queryset = Title.objects.all()
+    permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = FilterForTitle
+
+    def get_serializer_class(self):
+        if self.action in ('list', 'retriev'):
+            return ReadOnlyTitleSerializer
+        return TitleSerializer
 
 
 @api_view(['POST'])

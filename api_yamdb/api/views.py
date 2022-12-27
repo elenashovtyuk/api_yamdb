@@ -40,27 +40,27 @@ from .serializers import (CategorySerializer,
 
 
 class CategoryViewSet(CLDViewSet):
-    """Отображение действий с категориями произведений"""
+    """Представление для категорий."""
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
-    search_fields = ('=name',)
+    search_fields = ('name',)
     lookup_field = 'slug'
 
 
 class GenreViewSet(CLDViewSet):
-    """Отображение действий с жанрами произведений"""
+    """Представление для жанров."""
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (filters.SearchFilter,)
-    search_fields = ('=name',)
+    search_fields = ('name',)
     lookup_field = 'slug'
 
 
 class TitleViewSet(viewsets.ModelViewSet):
-    """Отображение действий с произведениями"""
+    """Представление для произведений."""
     queryset = Title.objects.all().annotate(
         rating=Avg('reviews__score')
     )
@@ -75,6 +75,7 @@ class TitleViewSet(viewsets.ModelViewSet):
 
 
 class ReviewViewSet(viewsets.ModelViewSet):
+    """Представление для отзывов."""
 
     def get_serializer_class(self):
         if self.action == 'partial_update':
@@ -98,6 +99,7 @@ class ReviewViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
+    """Представление для комментариев к отзывам."""
     serializer_class = CommentSerializer
 
     def get_permissions(self):
@@ -120,13 +122,16 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 @api_view(['POST'])
 def sign_up(request):
+    """Представление для регистрации."""
     serializer = SendCodeSerializer(data=request.data)
     email = request.data.get('email')
     username = request.data.get('username')
+
     if User.objects.filter(username=username, email=email).exists():
         return Response(
             serializer.initial_data, status=status.HTTP_200_OK
         )
+
     if serializer.is_valid():
         serializer.save()
         confirmation_code = ''.join(
@@ -145,18 +150,18 @@ def sign_up(request):
         )
         return Response(serializer.data, status=status.HTTP_200_OK)
     return Response(
-        serializer.errors,
-        status=status.HTTP_400_BAD_REQUEST
+        serializer.errors, status=status.HTTP_400_BAD_REQUEST
     )
 
 
 @api_view(['POST'])
 def get_jwt_token(request):
+    """Представление для получения токена."""
+    serializer = CheckConfirmationCodeSerializer(data=request.data)
     username = request.data.get('username')
     confirmation_code = request.data.get('confirmation_code')
-    serializer = CheckConfirmationCodeSerializer(data=request.data)
+
     if serializer.is_valid():
-        print(serializer.data)
         try:
             user = User.objects.get(username=username)
         except User.DoesNotExist:
@@ -164,7 +169,6 @@ def get_jwt_token(request):
                 serializer.errors, status=status.HTTP_404_NOT_FOUND
             )
         if check_password(confirmation_code, user.confirmation_code):
-            print(confirmation_code)
             token = AccessToken.for_user(user)
             return Response(
                 {'token': f'{token}'}, status=status.HTTP_200_OK
@@ -175,13 +179,13 @@ def get_jwt_token(request):
 
 
 class UserViewSet(viewsets.ModelViewSet):
-
+    """Представление для пользователей."""
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    lookup_field = 'username'
     permission_classes = (IsSuperUserOrAdmin,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('username',)
+    lookup_field = 'username'
     http_method_names = ('get', 'post', 'delete', 'patch',)
 
     @action(
@@ -190,6 +194,7 @@ class UserViewSet(viewsets.ModelViewSet):
         permission_classes=(permissions.IsAuthenticated,)
     )
     def me(self, request):
+        """Обработка url users/me/."""
         user = request.user
         if request.method == 'GET':
             serializer = UserSerializer(user)

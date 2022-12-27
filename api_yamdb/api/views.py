@@ -15,6 +15,7 @@ from .serializers import SendCodeSerializer, CheckConfirmationCodeSerializer, Us
 from .permissions import IsAdmin
 
 
+
 @api_view(['POST'])
 def sign_up(request):
 
@@ -28,10 +29,8 @@ def sign_up(request):
             serializer.initial_data, status=status.HTTP_200_OK
         )
     if serializer.is_valid():
+        serializer.save()
         confirmation_code = ''.join(map(str, random.sample(range(10), 6)))
-        # user = User.objects.filter(email=email, username=username).exists()
-        # if not user:
-        #     User.objects.create_user(email=email, username=username)
         User.objects.filter(email=email).update(
             confirmation_code=make_password(confirmation_code, salt=None, hasher='default')
         )
@@ -39,7 +38,6 @@ def sign_up(request):
         mail_subject = 'Код подтверждения на Yamdb.ru'
         message = f'Ваш код подтверждения: {confirmation_code}'
         send_mail(mail_subject, message, 'Yamdb.ru <mail@yamdb.ru>', [email])
-        #return Response(f'Код отправлен на адрес {email}', status=status.HTTP_200_OK)
         return Response(serializer.data, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -49,24 +47,26 @@ def get_jwt_token(request):
     confirmation_code = request.data.get('confirmation_code')
     serializer = CheckConfirmationCodeSerializer(data=request.data)
     if serializer.is_valid():
+        print(serializer.data)
         try:
             user = User.objects.get(username=username)
         except User.DoesNotExist:
             return Response(
                 serializer.errors, status=status.HTTP_404_NOT_FOUND
             )
-        email = serializer.data.get('email')
-        confirmation_code = serializer.data.get('confirmation_code')
-        user = get_object_or_404(User, email=email)
         if check_password(confirmation_code, user.confirmation_code):
+            print(confirmation_code)
             token = AccessToken.for_user(user)
             return Response({'token': f'{token}'}, status=status.HTTP_200_OK)
-        # return Response({'confirmation_code': 'Неверный код подтверждения'},
-        #                 status=status.HTTP_400_BAD_REQUEST)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class UserViewSet(viewsets.ModelViewSet):
+
+
+
+
+
     queryset = User.objects.all()
     serializer_class = UserSerializer
     lookup_field = 'username'
@@ -98,24 +98,3 @@ class UserViewSet(viewsets.ModelViewSet):
                 serializer.errors,
                 status=status.HTTP_400_BAD_REQUEST
             )
-
-
-
-class APIUser(APIView):
-    def get(self, request):
-        if request.user.is_authenticated:
-            user = get_object_or_404(User, id=request.user.id)
-            serializer = UserSerializer(user)
-            return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response('Вы не авторизованы', status=status.HTTP_401_UNAUTHORIZED)
-
-    def patch(self, request):
-        if request.user.is_authenticated:
-            user = get_object_or_404(User, id=request.user.id)
-            serializer = UserSerializer(user, data=request.data, partial=True,)
-            if serializer.is_valid():
-                serializer.validated_data['role'] = request.user.role
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_200_OK)
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-        return Response('Вы не авторизованы', status=status.HTTP_401_UNAUTHORIZED)

@@ -1,6 +1,5 @@
 
 from django.core.mail import send_mail
-from django.shortcuts import get_object_or_404
 from rest_framework import viewsets, filters, status, permissions
 from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
@@ -62,10 +61,6 @@ def get_jwt_token(request):
 
 
 class UserViewSet(viewsets.ModelViewSet):
-
-
-
-
 
     queryset = User.objects.all()
     serializer_class = UserSerializer

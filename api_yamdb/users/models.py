@@ -12,6 +12,7 @@ USER_ROLES = (
 
 
 class User(AbstractUser):
+    """Модель User проекта."""
     username = models.CharField(
         verbose_name='Имя пользователя',
         max_length=150,
@@ -51,15 +52,20 @@ class User(AbstractUser):
 
     @property
     def is_admin(self):
+        """Свойство наличия у пользователя роли администратора."""
         return self.role == 'admin'
 
     @property
     def is_moderator(self):
+        """Свойство наличия у пользователя роли модератора."""
         return self.role == 'moderator'
 
     @property
     def is_user(self):
+        """Свойство наличия у пользователя роли обычного
+        пользователя. """
         return self.role == 'user'
 
     def __str__(self):
+        """Строковое представление объекта модели."""
         return self.email

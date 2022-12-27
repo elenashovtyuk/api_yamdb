@@ -1,108 +1,38 @@
 from rest_framework import serializers
-
-# перед созданием сериализаторов
-# нужно импортировать все модели из приложения reviews
 from reviews.models import Title, Category, Genre
+from users.models import User
 
 
-# поскольку мы создаем сериализаторы, работающие с моделями,
-# то все их наследуем их от класса ModelSerializer
-
-# создаем сериализатор для модели Category
-# он отвечает за преобразование объектов модели Category в JSON и обратно
 class CategorySerializer(serializers.ModelSerializer):
-    # в классе Meta указываем модель, с которой будет работать сериализатор
-    # также указываем поля, для которых необходимо выполнить сериализацию
-    # в нашем случае это поля name, slug
+    
     class Meta:
         model = Category
         fields = ('name', 'slug')
 
 
-# создаем сериализатор для модели Genre
-# он отвечает за преобразование объектов модели Genre в JSON и обратно
 class GenreSerializer(serializers.ModelSerializer):
-    # в классе Meta указываем модель, с которой будет работать сериализатор
-    # также указываем поля, для которых необходимо выполнить сериализацию
-    # это также, как и в случае с CategorySerializer поле name
+   
     class Meta:
         model = Genre
         fields = ('name', 'slug')
 
 
-# создаем сериализатор для модели Title
-# указываем в классе Meta модель, с которой будет работать сериализатор
-#  также укажем поля, которые нужно сериализовать
-# указываем все поля.
-# Потом те поля, через которые модели связаны друг с другом  переопределим,
-# чтобы получить не id, а строковое представление
-# в модели Title таких поля 2 - category и genre
-# такие поля называются декларируемые
-
-# Модель Title связана с моделью Category через поле category
-# по умолчанию мы будем получать только id категории,
-# но это не информативно
-# нам нужно получить именно объект категорию произведения, а не id категории
-# напишем сериализатор для модели Category (см.выше)
-# а в сериализаторе TitleSerializer укажем поле category
-# а типом поля сделаем сериализатор CategorySerializer
-# в параметрах укажем ограничение доступа к полю  - только для чтения
-
-# Модель Title связана с моделью Genre через поле genre
-# по умолчанию мы будем получать id жанра,
-# но это не информативно.
-# Переопределим это поле в нашем сериализаторе
-# при запросе к эндпоинту api/v1/titles мы должны также получать список жанров,
-# которые относятся к указанному произведению
-# т.е мы должны получить ИМЕННО СПИСОК жанров
-# чтобы реализовать эту идею в сериализаторе
-# нужно вложить один сериализатор в другой
-# т.е определить в сериализаторе поле типом которого будет другой сериализатор
-# т.о вложенный сериализатор передаст в поле родительского сериализатора
-# список объектов (жанров)
-# в нашем случае родительский сериализатор - TitleSerializer,
-# а вложенный сериализатор - GenreSerializer
-# напишем (см выше) сериализатор для модели Genre и
-# далее укажем поле genre в родительском сериализаторе TitleSerializer.
-# по умолчанию это связанное поле будет иметь тип PrimaryKeyRelatedField,
-# но нас это не устраивает - нам не нужен список id жанров,
-# нам нужен именно список самих объектов!!!
-# поэтому назначим типом поля genre сериализатор GenreSerializer
-#  и в параметрах укажем следующее:
-# many = True, так как жанров у произведения может быть несколько
-# и пока укажем ограничение - доступ к полю только для чтения
 class ReadOnlyTitleSerializer(serializers.ModelSerializer):
     """Сериализатор для произведений (только для чтения)"""
-    # теперь поле category будет получать объекты модели Category,
-    # сериализованные в CategorySerializer
+    
     category = CategorySerializer()
-    # а поле genre будет получать объекты модели Genre,
-    # сериализованные в GenreSerializer
     genre = GenreSerializer(many=True)
     rating = serializers.IntegerField(default=1)
 
     class Meta:
         model = Title
         fields = '__all__'
-# таким образом получаем сериализатор для чтения
-# то есть, когда нам нужно только получить список всех произведений
-# (Get-запросы к эндпоинту api/v1/titles/)
 
 
-# Но предыдущий сериализатор только для чтения данных,
-# нужен сериализатор для записи объектов
-# типом полей category и genre делаем SlugRelatedField
-# этот тип поля принимает аргумент slug_field и делает из него slug
-# для работы в режиме записи еще дополнительно передадим аргумент queryset
 class TitleSerializer(serializers.ModelSerializer):
     """Сериализатор для произведений(для записи)"""
     category = serializers.SlugRelatedField(
-        # указываем аргументы для поля SlugRelatedField
-        # обязательный аргумент slug_field - это поле,
-        # которое однозначно идентифицирует объект по уникальному 'slug'
-        # важно убедиться что поле slug в модели указано unique=True
         slug_field='slug',
-        # выборка, по которой ведет поиск объекта
         queryset=Category.objects.all()
 
     )
@@ -115,3 +45,23 @@ class TitleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Title
         fields = '__all__'
+
+
+class SendCodeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = ('username', 'email',)
+
+
+class CheckConfirmationCodeSerializer(serializers.Serializer):
+    username = serializers.CharField(required=True)
+    confirmation_code = serializers.CharField(required=True)
+
+
+class UserSerializer(serializers.ModelSerializer):
+
+
+    class Meta:
+        fields = ('first_name', 'last_name', 'username', 'bio', 'email', 'role',)
+        model = User

@@ -28,12 +28,6 @@
 
 **COMMENTS**: комментарии к отзывам. Комментарий привязан к определённому отзыву.
 
-## Алгоритм регистрации пользователей
-Пользователь отправляет POST-запрос с параметрами email и username на `/api/v1/auth/signup/`.
-YaMDB отправляет письмо с кодом подтверждения (confirmation_code) на адрес email.
-Пользователь отправляет POST-запрос с параметрами email и confirmation_code на `/api/v1/auth/token/`, в ответе на запрос ему приходит token (JWT-токен).
-В результате пользователь получает токен и может работать с API, отправляя этот токен с каждым запросом.
-
 ## Пользовательские роли
 **Аноним** — может просматривать описания произведений, читать отзывы и комментарии.
 
@@ -90,6 +84,83 @@ python3 manage.py migrate
 ```
 python3 manage.py runserver
 ```
+
+# Примеры запросов к API
+
+Для доступа к API необходимо зарегистрироваться(получить токен):
+
+1. Для этого нужно выполнить POST-запрос по указанному эндпоинту с использованием "username" и "email":
+
+```
+{
+"email": "user@example.com",
+"username": "user"
+}
+```
+
+```
+http://127.0.0.1:8000/api/v1/auth/signup/
+```
+В ответ YaMDB отправляет письмо с кодом подтверждения (confirmation_code) на адрес email.
+
+2. Отправить POST-запрос по указанному эндпоинту с параметрами 'username' и 'confirmation_code':
+
+```
+{
+"username": "user",
+"confirmation_code": "string"
+}
+```
+
+```
+http://127.0.0:8000/api/v1/auth/token/
+```
+В ответ пользователь получает токен(JWT-токен):
+
+```
+{
+"token": "string"
+}
+```
+
+3. При желеании пользователь может отправить POST-запрос на следующий эндпоинт, заполняет поля в своем профиле:
+
+```
+http://127.0.0:8000/api/v1/users/me/
+```
+
+
+Дальше пользователь может работать с API, отправляя этот токен с каждым запросом.
+Возможные ресурсы API:
+
+```
+/api/v1/categories/ (GET, POST)
+
+/api/v1/categories/{slug}/ (DELETE)
+
+/api/v1/genres/ (GET, POST)
+
+/api/v1/genres/{slug}/ (DELETE)
+
+/api/v1/titles/ (GET, POST)
+
+/api/v1/titles/{titles_id}/ (GET, PATCH, DELETE)
+
+/api/v1/titles/{title_id}/reviews/ (GET, POST)
+
+/api/v1/titles/{title_id}/reviews/{review_id}/ (GET, PATCH, DELETE)
+
+/api/v1/titles/{title_id}/reviews/{review_id}/comments/ (GET, POST)
+
+/api/v1/titles/{title_id}/reviews/{review_id}/comments/{comment_id}/ (GET, PATCH, DELETE)
+
+/api/v1/users/ (GET, POST)
+
+/api/v1/{username}/ (GET, PATCH, DELETE)
+
+/api/v1/users/me/ (GET, PATCH)
+```
+
 
 # Авторы проекта
 Шовтюк Елена, Михайлова Мария, Пиголкин Андрей

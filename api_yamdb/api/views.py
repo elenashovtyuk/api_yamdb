@@ -114,7 +114,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user, review=review)
 
 
-@api_view(['POST'])
+@api_view(('POST',))
 def sign_up(request):
     """Представление для регистрации."""
     serializer = SendCodeSerializer(data=request.data)
@@ -148,7 +148,7 @@ def sign_up(request):
     )
 
 
-@api_view(['POST'])
+@api_view(('POST',))
 def get_jwt_token(request):
     """Представление для получения токена."""
     serializer = CheckConfirmationCodeSerializer(data=request.data)

@@ -70,7 +70,7 @@ class Title(models.Model):
 
     year = models.IntegerField(
         verbose_name='Год выпуска',
-        validators=[validate_year]
+        validators=(validate_year,)
     )
 
     description = models.TextField(

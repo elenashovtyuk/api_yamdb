@@ -1,10 +1,12 @@
 from django.core.validators import RegexValidator
 # from django.shortcuts import render
-from rest_framework import filters, status, viewsets
+from rest_framework import filters, viewsets
 # from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 
 # из приложения reviews импортируем все нужные модели
 from reviews.models import Category, Genre, Title
+from .filters import FilterForTitle
 from .mixins import CLDViewSet
 # из приложения api импортируем необходимые кастомные пермишнс
 # для моделей Title, Category, Genre это IsAdminOrReadOnly
@@ -38,9 +40,11 @@ class CategoryViewSet(CLDViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (IsAdminOrReadOnly,)
-    validators=(RegexValidator(r'^[-a-zA-Z0-9_]+$')
+    validators = (RegexValidator(r'^[-a-zA-Z0-9_]+$'))
     filter_backends = (filters.SearchFilter,)
-    search_fields = ['=name']
+    search_fields = ('=name',)
+    # lookup_field = 'slug'
+
     # чтобы создать ограничение прав доступа на уровне вьюсетов
     # нужно добавить параметр permission_classes
     # и в виде кортежа указать один или несколько кастомных пермишнс
@@ -53,9 +57,11 @@ class GenreViewSet(CLDViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     permission_classes = (IsAdminOrReadOnly,)
-    validators=(RegexValidator(r'^[-a-zA-Z0-9_]+$')
+    validators = (RegexValidator(r'^[-a-zA-Z0-9_]+$'))
     filter_backends = (filters.SearchFilter,)
-    search_fields = ['=name']
+    search_fields = ('=name',)
+    # lookup_field = 'slug'
+
     # чтобы создать ограничение прав доступа на уровне вьюсетов
     # нужно добавить параметр permission_classes
     # и в виде кортежа указать один или несколько кастомных пермишнс
@@ -67,6 +73,8 @@ class TitleViewSet(viewsets.ModelViewSet):
     """Отображение действий с произведениями"""
     queryset = Title.objects.all()
     permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (DjangoFilterBackend,)
+    filterset_class = FilterForTitle
     # так как для модели Title у нас 2 сериализатора, то во вьюсете для Title
     # мы не указываем serializer_class,
     # а переопределяем метод get_serializer_class()

@@ -18,7 +18,6 @@ from rest_framework import viewsets, filters, status, permissions
 from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
-from rest_framework.views import APIView
 from django.contrib.auth.hashers import make_password, check_password
 from django.db.models import Avg
 import random
@@ -32,8 +31,8 @@ from django_filters.rest_framework import DjangoFilterBackend
 from reviews.models import Category, Genre, Title
 from .filters import FilterForTitle
 from .mixins import CLDViewSet
-
 from .permissions import (IsAdminOrReadOnly, IsSuperUserOrAdmin)
+
 from .serializers import (CategorySerializer,
                           GenreSerializer,
                           ReadOnlyTitleSerializer,

@@ -14,9 +14,8 @@ class User(AbstractUser):
     username = models.CharField(
         max_length=150,
         unique=True,
-        validators=[RegexValidator(regex=r'^[\w.@+-]+\Z',  message= 'недопустимое имя пользователя',),
-        validate_me
-        ]
+        validators=(RegexValidator(regex=r'^[\w.@+-]+\Z',  message= 'недопустимое имя пользователя',),
+        validate_me)
         )
     email = models.EmailField(verbose_name="Электронная почта", max_length=254, unique=True)
     bio = models.TextField(
@@ -36,7 +35,7 @@ class User(AbstractUser):
         null=True,
     )
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["username"]
+    REQUIRED_FIELDS = ("username")
 
     objects =  UserManager()
 

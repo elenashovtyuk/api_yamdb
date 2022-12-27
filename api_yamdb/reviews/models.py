@@ -1,5 +1,6 @@
 from django.db import models
 from .validators import validate_year
+from django.core.validators import RegexValidator
 
 
 # создаем модель категорий произведений
@@ -19,7 +20,8 @@ class Category(models.Model):
     slug = models.SlugField(
         verbose_name='Идентификатор категории',
         max_length=50,
-        unique=True
+        unique=True,
+        validators=(RegexValidator(r'^[-a-zA-Z0-9_]+$'),)
     )
 
     def __str__(self):
@@ -48,7 +50,8 @@ class Genre(models.Model):
     slug = models.SlugField(
         verbose_name='Идентификатор жанра',
         max_length=50,
-        unique=True
+        unique=True,
+        validators=(RegexValidator(r'^[-a-zA-Z0-9_]+$'),)
     )
 
     def __str__(self):

@@ -1,6 +1,4 @@
-# api_yamdb
-api_yamdb
- Проект «API для Yatube»
+Проект «API для Yatube»
 #### **_Приложение предоставляет доступ к своим данным клиентскому приложению по определенному URL._**
 API и документация для приложения Yatube
 ___
@@ -61,3 +59,4 @@ python3 manage.py migrate
 * Запустить проект:
 ```
 python3 manage.py runserver
+

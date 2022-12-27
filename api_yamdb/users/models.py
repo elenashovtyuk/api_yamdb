@@ -1,44 +1,14 @@
 from django.db import models
-from django.contrib.auth.models import AbstractUser, BaseUserManager
+from django.contrib.auth.models import AbstractUser, UserManager
 from django.core.validators import RegexValidator
 from .validators import validate_me
 
-class CustomUserManager(BaseUserManager):
-    def create_user(
-        self, username, email, password=None,**extra_fields
-    ):
-        if not email:
-            raise ValueError("User must have an email address")
-        if not username:
-            raise ValueError("User must have an username")
 
-        user = self.model(
-            email=self.normalize_email(email),
-            username=username,
-            **extra_fields
-        )
-        user.set_password(password)
-        user.save()
-        return user
-
-    def create_superuser(
-        self,
-        username,
-        email,
-        password,
-        **extra_fields
-    ):
-        user = self.create_user(
-            email=self.normalize_email(email),
-            username=username,
-            **extra_fields
-        )
-        user.is_staff=True
-        user.is_superuser=True
-        user.set_password(password)
-        user.save()
-        return user
-
+USER_ROLES = (
+    ("user", "пользователь"),
+    ("moderator", "модератор"),
+    ("admin", "администратор"),
+    )
 
 class User(AbstractUser):
     username = models.CharField(
@@ -57,26 +27,30 @@ class User(AbstractUser):
     confirmation_code = models.CharField(
         verbose_name="Код подтверждения", max_length=6, default="000000"
     )
-
-    USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["username"]
-
-    USER_ROLE = (
-        ("user", "user"),
-        ("moderator", "moderator"),
-        ("admin", "admin"),
-    )
-
     role = models.CharField(
         verbose_name="Роль пользователя",
         max_length=9,
-        choices=USER_ROLE,
+        choices=USER_ROLES,
         default="user",
         blank=True,
         null=True,
     )
+    USERNAME_FIELD = "email"
+    REQUIRED_FIELDS = ["username"]
 
-    objects = CustomUserManager()
+    objects =  UserManager()
+
+    @property
+    def is_admin(self):
+        return self.role == "admin"
+
+    @property
+    def is_moderator(self):
+        return self.role == "moderator"
+
+    @property
+    def is_user(self):
+        return self.role == "user"
 
 
 

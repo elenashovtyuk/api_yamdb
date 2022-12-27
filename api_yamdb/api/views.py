@@ -20,12 +20,11 @@ from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
 from rest_framework.views import APIView
 from django.contrib.auth.hashers import make_password, check_password
-
+from django.db.models import Avg
 import random
 
 from users.models import User
 from .serializers import SendCodeSerializer, CheckConfirmationCodeSerializer, UserSerializer
-from .permissions import IsAdmin
 from rest_framework import filters, viewsets
 
 from django_filters.rest_framework import DjangoFilterBackend
@@ -50,7 +49,7 @@ class CategoryViewSet(CLDViewSet):
     search_fields = ('=name',)
     lookup_field = 'slug'
 
-    
+
 class GenreViewSet(CLDViewSet):
     """Отображение действий с жанрами произведений"""
     queryset = Genre.objects.all()
@@ -60,10 +59,12 @@ class GenreViewSet(CLDViewSet):
     search_fields = ('=name',)
     lookup_field = 'slug'
 
-   
+
 class TitleViewSet(viewsets.ModelViewSet):
     """Отображение действий с произведениями"""
-    queryset = Title.objects.all()
+    queryset = Title.objects.all().annotate(
+        rating=Avg('reviews__score')
+    )
     permission_classes = (IsAdminOrReadOnly,)
     filter_backends = (DjangoFilterBackend,)
     filterset_class = FilterForTitle
@@ -72,7 +73,7 @@ class TitleViewSet(viewsets.ModelViewSet):
         if self.action in ('list', 'retriev'):
             return ReadOnlyTitleSerializer
         return TitleSerializer
-        
+
 
 class ReviewViewSet(viewsets.ModelViewSet):
 

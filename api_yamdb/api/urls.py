@@ -33,5 +33,5 @@ router_v1.register(
 urlpatterns = [
     path('v1/auth/signup/', sign_up, name='sign_up'),
     path('v1/auth/token/', get_jwt_token, name='send_confirmation_code'),
-    path('v1/', include(router.urls)),
+    path('v1/', include(router_v1.urls)),
 ]

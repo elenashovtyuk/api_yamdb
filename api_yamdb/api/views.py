@@ -1,4 +1,4 @@
-from django.core.validators import RegexValidator
+#from django.core.validators import RegexValidator
 # from django.shortcuts import render
 from rest_framework import filters, viewsets
 # from django.shortcuts import get_object_or_404
@@ -40,10 +40,10 @@ class CategoryViewSet(CLDViewSet):
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (IsAdminOrReadOnly,)
-    validators = (RegexValidator(r'^[-a-zA-Z0-9_]+$'))
+    # validators = (RegexValidator(r'^[-a-zA-Z0-9_]+$'))
     filter_backends = (filters.SearchFilter,)
     search_fields = ('=name',)
-    # lookup_field = 'slug'
+    lookup_field = 'slug'
 
     # чтобы создать ограничение прав доступа на уровне вьюсетов
     # нужно добавить параметр permission_classes
@@ -57,10 +57,10 @@ class GenreViewSet(CLDViewSet):
     queryset = Genre.objects.all()
     serializer_class = GenreSerializer
     permission_classes = (IsAdminOrReadOnly,)
-    validators = (RegexValidator(r'^[-a-zA-Z0-9_]+$'))
+    # validators = (RegexValidator(r'^[-a-zA-Z0-9_]+$'))
     filter_backends = (filters.SearchFilter,)
     search_fields = ('=name',)
-    # lookup_field = 'slug'
+    lookup_field = 'slug'
 
     # чтобы создать ограничение прав доступа на уровне вьюсетов
     # нужно добавить параметр permission_classes

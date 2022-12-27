@@ -1,12 +1,12 @@
 from rest_framework import serializers
 from rest_framework.relations import SlugRelatedField
-from reviews.models import Title, Category, Genre, Review, Comment
+from reviews.models import Category, Comment, Genre, Review, Title
 from users.models import User
 
 
 class CategorySerializer(serializers.ModelSerializer):
     """Сериализатор для категорий."""
-    
+
     class Meta:
         model = Category
         fields = ('name', 'slug')

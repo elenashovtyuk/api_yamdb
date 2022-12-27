@@ -1,42 +1,29 @@
-from django.shortcuts import get_object_or_404
-from rest_framework import (
-    permissions,
-    viewsets
-)
-from reviews.models import Title, Review, Comment
-
-from .permissions import (
-    IsAuthorOrModeratorOrAdminOrReadOnly
-)
-from .serializers import (
-    ReviewSerializer,
-    ReviewUpdateSerializer,
-    CommentSerializer
-)
-from django.core.mail import send_mail
-from rest_framework import viewsets, filters, status, permissions
-from rest_framework.decorators import api_view, action
-from rest_framework.response import Response
-from rest_framework_simplejwt.tokens import AccessToken
-from django.contrib.auth.hashers import make_password, check_password
-from django.db.models import Avg
 import random
 
-from users.models import User
-from .serializers import SendCodeSerializer, CheckConfirmationCodeSerializer, UserSerializer
-from rest_framework import filters, viewsets
-
+from django.contrib.auth.hashers import check_password, make_password
+from django.core.mail import send_mail
+from django.db.models import Avg
+from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework import filters, permissions, status, viewsets
+from rest_framework.decorators import action, api_view
+from rest_framework.response import Response
+from rest_framework_simplejwt.tokens import AccessToken
+from reviews.models import Category, Comment, Genre, Review, Title
+from users.models import User
 
-from reviews.models import Category, Genre, Title
 from .filters import FilterForTitle
 from .mixins import CLDViewSet
-from .permissions import (IsAdminOrReadOnly, IsSuperUserOrAdmin)
-
-from .serializers import (CategorySerializer,
-                          GenreSerializer,
-                          ReadOnlyTitleSerializer,
-                          TitleSerializer)
+from .permissions import (
+    IsAdminOrReadOnly, IsAuthorOrModeratorOrAdminOrReadOnly,
+    IsSuperUserOrAdmin,
+)
+from .serializers import (
+    CategorySerializer, CheckConfirmationCodeSerializer, CommentSerializer,
+    GenreSerializer, ReadOnlyTitleSerializer, ReviewSerializer,
+    ReviewUpdateSerializer, SendCodeSerializer, TitleSerializer,
+    UserSerializer,
+)
 
 
 class CategoryViewSet(CLDViewSet):

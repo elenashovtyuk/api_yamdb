@@ -1,4 +1,6 @@
-from django.core.validators import MaxValueValidator, MinValueValidator, RegexValidator
+from django.core.validators import (
+    MaxValueValidator, MinValueValidator, RegexValidator,
+)
 from django.db import models
 from users.models import User
 
@@ -88,8 +90,8 @@ class Title(models.Model):
     def __str__(self):
         """Строковое представление объекта модели."""
         return self.name
-        
-        
+
+
 class Review(models.Model):
     """Модель отзыва на произведение."""
     title = models.ForeignKey(

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Title, Category, Genre, Review, Comment
+from .models import Category, Comment, Genre, Review, Title
 
 
 class TitleAdmin(admin.ModelAdmin):
@@ -23,7 +23,7 @@ class GenreAdmin(admin.ModelAdmin):
     list_display = ('pk', 'name', 'slug',)
     search_fields = ('name',)
     list_filter = ('name',)
-    
+
 
 class ReviewAdmin(admin.ModelAdmin):
     """Класс отображения параметров Review в административной части."""

@@ -15,14 +15,21 @@ from users.models import User
 from .filters import FilterForTitle
 from .mixins import CLDViewSet
 from .permissions import (
-    IsAdminOrReadOnly, IsAuthorOrModeratorOrAdminOrReadOnly,
-    IsSuperUserOrAdmin,
+    IsAdminOrReadOnly,
+    IsAuthorOrModeratorOrAdminOrReadOnly,
+    IsSuperUserOrAdmin
 )
 from .serializers import (
-    CategorySerializer, CheckConfirmationCodeSerializer,
-    CommentSerializer, GenreSerializer, ReadOnlyTitleSerializer,
-    ReviewSerializer, ReviewUpdateSerializer, SendCodeSerializer,
-    TitleSerializer, UserSerializer,
+    CategorySerializer,
+    CheckConfirmationCodeSerializer,
+    CommentSerializer,
+    GenreSerializer,
+    ReadOnlyTitleSerializer,
+    ReviewSerializer,
+    ReviewUpdateSerializer,
+    SendCodeSerializer,
+    TitleSerializer,
+    UserSerializer
 )
 
 
@@ -107,7 +114,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer.save(author=self.request.user, review=review)
 
 
-@api_view(['POST'])
+@api_view(('POST',))
 def sign_up(request):
     """Представление для регистрации."""
     serializer = SendCodeSerializer(data=request.data)
@@ -141,7 +148,7 @@ def sign_up(request):
     )
 
 
-@api_view(['POST'])
+@api_view(('POST',))
 def get_jwt_token(request):
     """Представление для получения токена."""
     serializer = CheckConfirmationCodeSerializer(data=request.data)

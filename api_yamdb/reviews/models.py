@@ -1,5 +1,5 @@
 from django.core.validators import (
-    MaxValueValidator, MinValueValidator, RegexValidator,
+    MaxValueValidator, MinValueValidator, RegexValidator
 )
 from django.db import models
 from users.models import User
@@ -111,10 +111,10 @@ class Review(models.Model):
     )
     score = models.IntegerField(
         verbose_name='Оценка',
-        validators=[
+        validators=(
             MinValueValidator(1),
-            MaxValueValidator(10)
-        ]
+            MaxValueValidator(10),
+        )
     )
     pub_date = models.DateTimeField(
         verbose_name='Дата отзыва',
@@ -124,12 +124,12 @@ class Review(models.Model):
     class Meta:
         verbose_name = 'Отзыв'
         verbose_name_plural = 'Отзывы'
-        constraints = [
+        constraints = (
             models.UniqueConstraint(
                 fields=('author', 'title'),
                 name='Каждый автор может написать только один отзыв'
-            )
-        ]
+            ),
+        )
 
     def __str__(self):
         """Строковое представление объекта модели."""

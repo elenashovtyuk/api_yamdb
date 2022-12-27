@@ -120,28 +120,35 @@ class CommentViewSet(viewsets.ModelViewSet):
 
 @api_view(['POST'])
 def sign_up(request):
-
-    username=request.data.get('username')
-    email = request.data.get('email')
     serializer = SendCodeSerializer(data=request.data)
     email = request.data.get('email')
-    username=request.data.get('username')
+    username = request.data.get('username')
     if User.objects.filter(username=username, email=email).exists():
         return Response(
             serializer.initial_data, status=status.HTTP_200_OK
         )
     if serializer.is_valid():
         serializer.save()
-        confirmation_code = ''.join(map(str, random.sample(range(10), 6)))
+        confirmation_code = ''.join(
+            map(str, random.sample(range(10), 6))
+        )
         User.objects.filter(email=email).update(
-            confirmation_code=make_password(confirmation_code, salt=None, hasher='default')
+            confirmation_code=make_password(
+                confirmation_code, salt=None, hasher='default'
+            )
         )
 
         mail_subject = 'Код подтверждения на Yamdb.ru'
         message = f'Ваш код подтверждения: {confirmation_code}'
-        send_mail(mail_subject, message, 'Yamdb.ru <mail@yamdb.ru>', [email])
+        send_mail(
+            mail_subject, message, 'Yamdb.ru <mail@yamdb.ru>', [email]
+        )
         return Response(serializer.data, status=status.HTTP_200_OK)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    return Response(
+        serializer.errors,
+        status=status.HTTP_400_BAD_REQUEST
+    )
+
 
 @api_view(['POST'])
 def get_jwt_token(request):
@@ -159,8 +166,12 @@ def get_jwt_token(request):
         if check_password(confirmation_code, user.confirmation_code):
             print(confirmation_code)
             token = AccessToken.for_user(user)
-            return Response({'token': f'{token}'}, status=status.HTTP_200_OK)
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {'token': f'{token}'}, status=status.HTTP_200_OK
+            )
+    return Response(
+        serializer.errors, status=status.HTTP_400_BAD_REQUEST
+    )
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -168,8 +179,8 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     lookup_field = 'username'
-    permission_classes = [ IsAdmin]
-    filter_backends = [filters.SearchFilter]
+    permission_classes = (IsAdminOrReadOnly,)
+    filter_backends = (filters.SearchFilter,)
     search_fields = ('username',)
     http_method_names = ('get', 'post', 'delete', 'patch',)
 

@@ -6,7 +6,6 @@ from users.models import User
 
 class CategorySerializer(serializers.ModelSerializer):
     """Сериализатор для категорий."""
-
     class Meta:
         model = Category
         fields = ('name', 'slug')
@@ -14,7 +13,6 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class GenreSerializer(serializers.ModelSerializer):
     """Сериализатор для жанров."""
-
     class Meta:
         model = Genre
         fields = ('name', 'slug')
@@ -64,7 +62,6 @@ class ReviewUpdateSerializer(serializers.ModelSerializer):
 
 class ReviewSerializer(ReviewUpdateSerializer):
     """Сериализатор для отзывов (кроме редактирования)."""
-
     def validate(self, data):
         request = self.context['request']
         author_id = request.user
@@ -94,7 +91,6 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class SendCodeSerializer(serializers.ModelSerializer):
     """Сериализатор для регистрации."""
-
     class Meta:
         model = User
         fields = ('username', 'email',)
@@ -108,10 +104,13 @@ class CheckConfirmationCodeSerializer(serializers.Serializer):
 
 class UserSerializer(serializers.ModelSerializer):
     """Сериализатор для пользователей."""
-
     class Meta:
         model = User
         fields = (
-            'first_name', 'last_name', 'username',
-            'bio', 'email', 'role',
+            'first_name',
+            'last_name',
+            'username',
+            'bio',
+            'email',
+            'role',
         )

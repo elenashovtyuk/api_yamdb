@@ -23,7 +23,7 @@ class User(AbstractUser):
                 message='Недопустимое имя пользователя'
             ),
             validate_me,)
-        )
+    )
     email = models.EmailField(
         verbose_name='Электронная почта',
         max_length=254,

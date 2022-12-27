@@ -33,7 +33,7 @@ from reviews.models import Category, Genre, Title
 from .filters import FilterForTitle
 from .mixins import CLDViewSet
 
-from .permissions import (IsAdminOrReadOnly,)
+from .permissions import (IsAdminOrReadOnly, IsSuperUserOrAdmin)
 from .serializers import (CategorySerializer,
                           GenreSerializer,
                           ReadOnlyTitleSerializer,
@@ -70,7 +70,7 @@ class TitleViewSet(viewsets.ModelViewSet):
     filterset_class = FilterForTitle
 
     def get_serializer_class(self):
-        if self.action in ('list', 'retriev'):
+        if self.action in ('list', 'retrieve'):
             return ReadOnlyTitleSerializer
         return TitleSerializer
 
@@ -180,7 +180,7 @@ class UserViewSet(viewsets.ModelViewSet):
     queryset = User.objects.all()
     serializer_class = UserSerializer
     lookup_field = 'username'
-    permission_classes = (IsAdminOrReadOnly,)
+    permission_classes = (IsSuperUserOrAdmin,)
     filter_backends = (filters.SearchFilter,)
     search_fields = ('username',)
     http_method_names = ('get', 'post', 'delete', 'patch',)

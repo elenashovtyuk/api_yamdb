@@ -19,6 +19,7 @@ class Category(models.Model):
     )
 
     def __str__(self):
+        """Строковое представление объекта модели."""
         return self.name
 
     class Meta:
@@ -41,6 +42,7 @@ class Genre(models.Model):
     )
 
     def __str__(self):
+        """Строковое представление объекта модели."""
         return self.name
 
     class Meta:
@@ -67,16 +69,16 @@ class Title(models.Model):
 
     category = models.ForeignKey(
         Category,
-        related_name='titles',
         verbose_name='Категория произведения',
+        related_name='titles',
         on_delete=models.SET_NULL,
         null=True
     )
 
     genre = models.ManyToManyField(
         Genre,
-        related_name='titles',
         verbose_name='Жанр произведения',
+        related_name='titles',
     )
 
     class Meta:
@@ -84,6 +86,7 @@ class Title(models.Model):
         verbose_name_plural = 'Произведения'
 
     def __str__(self):
+        """Строковое представление объекта модели."""
         return self.name
         
         
@@ -91,28 +94,28 @@ class Review(models.Model):
     """Модель отзыва на произведение."""
     title = models.ForeignKey(
         Title,
-        on_delete=models.CASCADE,
-        related_name='reviews',
         verbose_name='Произведение',
+        related_name='reviews',
+        on_delete=models.CASCADE,
         null=True
     )
-    text = models.TextField('Текст отзыва')
+    text = models.TextField(verbose_name='Текст отзыва')
     author = models.ForeignKey(
         User,
-        on_delete=models.CASCADE,
-        related_name='reviews',
         verbose_name='Автор отзыва',
+        related_name='reviews',
+        on_delete=models.CASCADE,
         null=True
     )
     score = models.IntegerField(
-        'Оценка',
+        verbose_name='Оценка',
         validators=[
             MinValueValidator(1),
             MaxValueValidator(10)
         ]
     )
     pub_date = models.DateTimeField(
-        'Дата отзыва',
+        verbose_name='Дата отзыва',
         auto_now_add=True,
     )
 
@@ -122,11 +125,12 @@ class Review(models.Model):
         constraints = [
             models.UniqueConstraint(
                 fields=('author', 'title'),
-                name='Only the one review is allowed from every person'
+                name='Каждый автор может написать только один отзыв'
             )
         ]
 
     def __str__(self):
+        """Строковое представление объекта модели."""
         return self.text
 
 
@@ -134,29 +138,29 @@ class Comment(models.Model):
     """Модель комментария на отзыв."""
     author = models.ForeignKey(
         User,
-        on_delete=models.CASCADE,
-        related_name='comments',
         verbose_name='Автор комментария',
+        related_name='comments',
+        on_delete=models.CASCADE,
         null=True
     )
     title = models.ForeignKey(
         Title,
-        on_delete=models.CASCADE,
-        related_name='comments',
         verbose_name='Произведение',
+        related_name='comments',
+        on_delete=models.CASCADE,
         null=True
     )
     review = models.ForeignKey(
         Review,
-        on_delete=models.CASCADE,
-        related_name='comments',
         verbose_name='Отзыв',
+        related_name='comments',
+        on_delete=models.CASCADE,
         null=True
     )
-    text = models.TextField('Текст комментария')
+    text = models.TextField(verbose_name='Текст комментария')
     pub_date = models.DateTimeField(
-        'Дата отзыва',
-        auto_now_add=True,
+        verbose_name='Дата отзыва',
+        auto_now_add=True
     )
 
     class Meta:
@@ -164,4 +168,5 @@ class Comment(models.Model):
         verbose_name_plural = 'Комментарии'
 
     def __str__(self):
+        """Строковое представление объекта модели."""
         return self.text

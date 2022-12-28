@@ -1,7 +1,10 @@
 from django.core.validators import (
-    MaxValueValidator, MinValueValidator, RegexValidator
+    MaxValueValidator,
+    MinValueValidator,
+    RegexValidator
 )
 from django.db import models
+
 from users.models import User
 
 from .validators import validate_year
@@ -133,7 +136,7 @@ class Review(models.Model):
 
     def __str__(self):
         """Строковое представление объекта модели."""
-        return self.text
+        return self.text[:30]
 
 
 class Comment(models.Model):
@@ -171,4 +174,4 @@ class Comment(models.Model):
 
     def __str__(self):
         """Строковое представление объекта модели."""
-        return self.text
+        return self.text[:30]

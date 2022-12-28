@@ -4,10 +4,14 @@ from django.db import models
 
 from .validators import validate_me
 
+USER = 'user'
+MODERATOR = 'moderator'
+ADMIN = 'admin'
+
 USER_ROLES = (
-    ('user', 'Пользователь'),
-    ('moderator', 'Модератор'),
-    ('admin', 'Администратор'),
+    (USER, 'Пользователь'),
+    (MODERATOR, 'Модератор'),
+    (ADMIN, 'Администратор'),
 )
 
 
@@ -40,7 +44,7 @@ class User(AbstractUser):
         choices=USER_ROLES,
         blank=True,
         null=True,
-        default='user'
+        default=USER
     )
 
     REQUIRED_FIELDS = ('email',)
@@ -50,18 +54,18 @@ class User(AbstractUser):
     @property
     def is_admin(self):
         """Свойство наличия у пользователя роли администратора."""
-        return self.role == 'admin'
+        return self.role == ADMIN
 
     @property
     def is_moderator(self):
         """Свойство наличия у пользователя роли модератора."""
-        return self.role == 'moderator'
+        return self.role == MODERATOR
 
     @property
     def is_user(self):
         """Свойство наличия у пользователя роли обычного
         пользователя. """
-        return self.role == 'user'
+        return self.role == USER
 
     def __str__(self):
         """Строковое представление объекта модели."""

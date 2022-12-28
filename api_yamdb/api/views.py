@@ -1,4 +1,4 @@
-from django.contrib.auth.hashers import check_password
+from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.db.models import Avg
@@ -135,7 +135,7 @@ def sign_up(request):
     mail_subject = 'Код подтверждения на Yamdb.ru'
     message = f'Ваш код подтверждения: {confirmation_code}'
     send_mail(
-        mail_subject, message, 'Yamdb.ru <mail@yamdb.ru>', [email]
+        mail_subject, message, settings.EMAIL_HOST_USER, [email]
     )
     return Response(serializer.data, status=status.HTTP_200_OK)
 

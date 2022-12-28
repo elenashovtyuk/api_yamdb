@@ -1,6 +1,5 @@
-import random
-
-from django.contrib.auth.hashers import check_password, make_password
+from django.contrib.auth.hashers import check_password
+from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.db.models import Avg
 from django.shortcuts import get_object_or_404
@@ -9,6 +8,7 @@ from rest_framework import filters, permissions, status, viewsets
 from rest_framework.decorators import action, api_view
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import AccessToken
+
 from reviews.models import Category, Genre, Review, Title
 from users.models import User
 
@@ -127,47 +127,34 @@ def sign_up(request):
             serializer.initial_data, status=status.HTTP_200_OK
         )
 
-    if serializer.is_valid():
-        serializer.save()
-        confirmation_code = ''.join(
-            map(str, random.sample(range(10), 6))
-        )
-        User.objects.filter(email=email).update(
-            confirmation_code=make_password(
-                confirmation_code, salt=None, hasher='default'
-            )
-        )
+    serializer.is_valid(raise_exception=True)
+    serializer.save()
+    user = User.objects.get(username=request.data.get('username'))
+    confirmation_code = default_token_generator.make_token(user)
 
-        mail_subject = 'Код подтверждения на Yamdb.ru'
-        message = f'Ваш код подтверждения: {confirmation_code}'
-        send_mail(
-            mail_subject, message, 'Yamdb.ru <mail@yamdb.ru>', [email]
-        )
-        return Response(serializer.data, status=status.HTTP_200_OK)
-    return Response(
-        serializer.errors, status=status.HTTP_400_BAD_REQUEST
+    mail_subject = 'Код подтверждения на Yamdb.ru'
+    message = f'Ваш код подтверждения: {confirmation_code}'
+    send_mail(
+        mail_subject, message, 'Yamdb.ru <mail@yamdb.ru>', [email]
     )
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(('POST',))
 def get_jwt_token(request):
     """Представление для получения токена."""
     serializer = CheckConfirmationCodeSerializer(data=request.data)
-    username = request.data.get('username')
     confirmation_code = request.data.get('confirmation_code')
 
-    if serializer.is_valid():
-        try:
-            user = User.objects.get(username=username)
-        except User.DoesNotExist:
-            return Response(
-                serializer.errors, status=status.HTTP_404_NOT_FOUND
-            )
-        if check_password(confirmation_code, user.confirmation_code):
-            token = AccessToken.for_user(user)
-            return Response(
-                {'token': f'{token}'}, status=status.HTTP_200_OK
-            )
+    serializer.is_valid(raise_exception=True)
+    user = get_object_or_404(
+        User, username=serializer.validated_data['username']
+    )
+    if default_token_generator.check_token(user, confirmation_code):
+        token = AccessToken.for_user(user)
+        return Response(
+            {'token': f'{token}'}, status=status.HTTP_200_OK
+        )
     return Response(
         serializer.errors, status=status.HTTP_400_BAD_REQUEST
     )

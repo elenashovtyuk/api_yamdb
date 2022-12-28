@@ -185,12 +185,8 @@ class UserViewSet(viewsets.ModelViewSet):
             serializer = UserSerializer(
                 user, partial=True, data=request.data
             )
-            if serializer.is_valid():
-                serializer.save(role=request.user.role)
-                return Response(
-                    serializer.data, status=status.HTTP_200_OK
-                )
+            serializer.is_valid(raise_exception=True)
+            serializer.save(role=request.user.role)
             return Response(
-                serializer.errors,
-                status=status.HTTP_400_BAD_REQUEST
+                serializer.data, status=status.HTTP_200_OK
             )
